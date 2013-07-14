@@ -20,9 +20,14 @@ Gem::Specification.new do | s |
 
   s.executables = ['news_crawler']
 
+  s.add_dependency 'mongo', '>= 1.9'
   s.add_dependency 'typhoeus', '~> 0.6'
   s.add_dependency 'nokogiri', '~> 1.5'
   s.add_dependency 'celluloid', '~> 0.14'
   s.add_dependency 'simpleconfig', '~> 2.0'
+
   s.add_development_dependency 'simplecov', '~> 0.7'
+  s.add_development_dependency 'minitest', '~> 5.0'
+  s.add_development_dependency 'mocha', '~> 0.14'
+  s.add_development_dependency 'coveralls'
 end
