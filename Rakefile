@@ -3,6 +3,8 @@ require 'rake/testtask'
 
 Bundler::GemHelper.install_tasks
 
+task :default => [:test]
+
 # task :test do
 #   require 'simplecov'
 #   SimpleCov.start do
