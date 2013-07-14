@@ -1,0 +1,13 @@
+db:
+  :engine: :mongo
+
+:mongodb:
+  :host: localhost
+  :port: !str 27017
+  :db_name: news-crawler
+
+:suffix:
+  :raw_data: raw_data
+  :url_queue: url_queue
+
+prefix: ''

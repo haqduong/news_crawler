@@ -1,0 +1,86 @@
+#! /usr/bin/env ruby
+# -*- coding: utf-8 -*-
+
+#--
+# NewsCrawler - a website crawler
+#
+# Copyright (C) 2013 - Hà Quang Dương <contact@haqduong.net>
+#
+# This file is part of NewsCrawler.
+#
+# NewsCrawler is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# NewsCrawler is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with NewsCrawler.  If not, see <http://www.gnu.org/licenses/>.
+#++
+
+require 'optparse'
+require 'news_crawler/config'
+
+require 'news_crawler/downloader'
+require 'news_crawler/link_selector/same_domain_selector'
+
+include NewsCrawler::Storage
+
+options = {}
+
+OptionParser.new do | opts |
+  opts.banner = "Usage: news_crawler [options] url"
+
+  opts.on('-c', "--app-conf FILE", "Application configuration file") do | f |
+    options[:app_conf] = File.expand_path(f)
+    raise Errno::ENOENT unless File.exists? options[:app_conf]
+  end
+
+  opts.on('-sds', "--sds-conf FILE", "Same domain selector configuration file") do | f |
+    options[:sds_conf] = File.expand_path(f)
+    raise Errno::ENOENT unless File.exists? options[:sds_conf]
+  end
+
+  opts.on('-d', "--max-depth DEPTH", OptionParser::DecimalInteger,
+          'Maximum depth of url to crawl') do  | d |
+    options[:max_depth] = d
+  end
+end.parse!
+
+if ARGV.length == 0
+  STDERR.puts "Missing url, see \"news_crawler -h\" for command usage"
+end
+
+url = ARGV[0]
+
+NewsCrawler::CrawlerConfig.load_application_config(options[:app_conf]) unless options[:app_conf].nil?
+NewsCrawler::CrawlerConfig.load_samedomainselector_config(options[:sds_conf]) unless options[:sds_conf].nil?
+
+config = SimpleConfig.for :application
+NewsCrawler::Storage::RawData.set_engine(config.db.engine.intern)
+NewsCrawler::Storage::URLQueue.set_engine(config.db.engine.intern)
+
+URLQueue.clear
+URLQueue.add(url)
+RawData.clear
+
+puts "Starting Downloader"
+dwl = NewsCrawler::Downloader.new(false)
+dwl.async.run
+
+puts "Starting SDS"
+se = NewsCrawler::LinkSelector::SameDomainSelector.new(options[:max_depth] || 1, false)
+se.async.run
+puts "Stoping SDS"
+se.graceful_terminate
+puts "SDS stopped"
+
+sleep(10)
+
+puts "Stoping Downloader"
+dwl.graceful_terminate
+puts "Downloader stopped"
