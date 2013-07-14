@@ -1,8 +1,7 @@
+require 'bundler/setup'
 require 'rake/testtask'
 
-# $:.unshift 'lib'
-# $:.unshift 'test'
-
+Bundler::GemHelper.install_tasks
 
 # task :test do
 #   require 'simplecov'
@@ -17,7 +16,7 @@ require 'rake/testtask'
 #   end
 # end
 
-Rake::TestTask.new do | t |
+Rake::TestTask.new(:test) do | t |
   test_list = Rake::FileList.new('test/**/*rb')
   test_list.exclude /((.*config.*)|(.*test_helper.*))/
   test_list.to_a
