@@ -3,6 +3,9 @@ NewsCrawler
 NewsCrawler is a flexible, modular web crawler intended to provide
 website analysis framework.
 
+[![Build Status](https://travis-ci.org/haqduong/news_crawler.png?branch=master)](https://travis-ci.org/haqduong/news_crawler)
+[![Coverage Status](https://coveralls.io/repos/haqduong/news_crawler/badge.png?branch=master)](https://coveralls.io/r/haqduong/news_crawler?branch=master)
+
 Getting started
 ===============
 CLI
