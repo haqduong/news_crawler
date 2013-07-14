@@ -25,6 +25,7 @@ Gem::Specification.new do | s |
   s.add_dependency 'nokogiri', '~> 1.5'
   s.add_dependency 'celluloid', '~> 0.14'
   s.add_dependency 'simpleconfig', '~> 2.0'
+  s.add_dependency 'robots', '~> 0.10'
 
   s.add_development_dependency 'simplecov', '~> 0.7'
   s.add_development_dependency 'minitest', '~> 5.0'

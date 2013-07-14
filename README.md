@@ -14,6 +14,16 @@ CLI
 You can pass configuration file to customize database parameter and
 modules' configuration.
 
+USAGE
+=====
+CLI
+---
+    Usage: news_crawler [options] url
+        -c, --app-conf FILE              Application configuration file
+        -s, --sds-conf FILE              Same domain selector configuration file
+        -d, --max-depth DEPTH            Maximum depth of url to crawl
+
+
 Caution
 =======
 This is a prelease version, so API can be changed significantly.
