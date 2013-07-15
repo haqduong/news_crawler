@@ -109,7 +109,7 @@ module NewsCrawler
         begin
           exclude_group = config.exclude
         rescue NoMethodError => e
-          return true
+          return false
         end
 
         exclude_group.to_hash.keys.each do | url_e |
@@ -120,7 +120,7 @@ module NewsCrawler
         end
 
         if exclude_list.count == 0
-          return true
+          return false
         end
 
         url.split('/').each do | part |

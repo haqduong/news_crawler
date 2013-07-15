@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #--
 # NewsCrawler - a website crawler
 #
@@ -41,5 +42,6 @@ describe SameDomainSelector do
     assert_equal SameDomainSelector.exclude?('http://vnexpress.net/'), false
     assert_equal SameDomainSelector.exclude?('http://vnexpress.net/tin-tuc'), false
     assert_equal SameDomainSelector.exclude?('http://www.vnexpress.net/tin-tuc'), false
+    assert_equal SameDomainSelector.exclude?('http://www.example.net'), false
   end
 end
