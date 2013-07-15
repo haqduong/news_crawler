@@ -14,7 +14,7 @@ CLI
 You can pass configuration file to customize database parameter and
 modules' configuration.
 
-USAGE
+Usage
 =====
 CLI
 ---
@@ -23,6 +23,9 @@ CLI
         -s, --sds-conf FILE              Same domain selector configuration file
         -d, --max-depth DEPTH            Maximum depth of url to crawl
 
+Requirements
+============
+Ruby >= 2.0
 
 Caution
 =======
