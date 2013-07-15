@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #--
 # NewsCrawler - a website crawler
 #
@@ -33,7 +34,7 @@ module NewsCrawler
 
         include Mongo
 
-        def initialize(**opts)
+        def initialize(*opts)
           config = (SimpleConfig.for :application)
           client = MongoClient.new(config.mongodb.host, config.mongodb.port)
           db = client[config.mongodb.db_name]

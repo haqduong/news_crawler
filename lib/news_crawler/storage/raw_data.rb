@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #--
 # NewsCrawler - a website crawler
 #
@@ -34,13 +35,13 @@ module NewsCrawler
         # @param [ Hash           ] opts options pass to engine
         #   This can be
         #   * `:mongo`, `:mongodb` for MongoDB backend
-        def set_engine(engine, **opts)
+        def set_engine(engine, *opts)
           if engine.respond_to? :intern
             engine = engine.intern
           end
           engine_class = RawDataEngine.get_engines[engine]
           if engine_class
-            @engine = engine_class.new(**opts)
+            @engine = engine_class.new(*opts)
           else
             @engine = engine
           end

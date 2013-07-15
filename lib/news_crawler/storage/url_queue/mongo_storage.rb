@@ -35,13 +35,14 @@ module NewsCrawler
         include Mongo
 
         # Construct a queue
-        def initialize(**opts)
+        def initialize(*opts)
           config = SimpleConfig.for :application
           db = MongoClient.new(config.mongodb.host, config.mongodb.port,
                                pool_size: 4,
                                pool_timeout: 5)[config.mongodb.db_name]
           coll_name = config.prefix + '_' + config.suffix.url_queue
-          @coll = db[opts[:coll_name] || coll_name]
+          h_opts = ((opts[-1].is_a? Hash) ? opts[-1] : {})
+          @coll = db[h_opts[:coll_name] || coll_name]
           @coll.ensure_index({:url => Mongo::ASCENDING}, {:unique => true})
         end
 
@@ -69,7 +70,7 @@ module NewsCrawler
 
         # Mark an URL as visited
         # @param [ String ] url
-        def mark_visited(url, **opts)
+        def mark_visited(url, *opts)
           @coll.update({:url  => url},
                        {:$set => {:visited => true}})
         end
@@ -103,7 +104,7 @@ module NewsCrawler
 
         # Get all URL and status
         # @return [ Array ] array of hash contains url and status
-        def all(**opts)
+        def all(*opts)
           @coll.find.collect do | entry |
             entry.each_key.inject({}) do | memo, key |
               if key != '_id'
@@ -192,7 +193,7 @@ module NewsCrawler
 
         # Clear URL queue
         # @return [ Fixnum ] number of urls removed
-        def clear(**opts)
+        def clear(*opts)
           count = @coll.count
           @coll.remove
           count

@@ -40,26 +40,26 @@ module NewsCrawler
         # @param [ Hash           ] opts options pass to engine
         #   This can be
         #   * `:mongo`, `:mongodb` for MongoDB backend
-        def set_engine(engine, **opts)
+        def set_engine(engine, *opts)
           if engine.respond_to? :intern
             engine = engine.intern
           end
           engine_class = URLQueueEngine.get_engines[engine]
           if engine_class
-            @engine = engine_class.new(**opts)
+            @engine = engine_class.new(*opts)
           else
             @engine = engine
           end
         end
 
         # delegate request to the engine
-        def method_missing(name, url = '', **opts)
+        def method_missing(name, url = '', *opts)
           if ACTION_LIST.include? name
             if url.size == 0
-              @engine.send(name, opts)
+              @engine.send(name, *opts)
             else
               url = normalize_url url
-              @engine.send(name, url, opts)
+              @engine.send(name, url, *opts)
             end
           end
         end
