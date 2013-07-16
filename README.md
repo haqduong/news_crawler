@@ -25,7 +25,8 @@ CLI
 
 Requirements
 ============
-Ruby >= 2.0
+* Ruby >= 1.9.3
+* MongoDB
 
 Caution
 =======
