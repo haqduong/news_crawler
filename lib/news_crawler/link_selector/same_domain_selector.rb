@@ -26,6 +26,7 @@ require 'nokogiri'
 require 'news_crawler/storage/raw_data'
 require 'news_crawler/url_helper'
 require 'news_crawler/crawler_module'
+require 'news_crawler/nc_logger'
 
 module NewsCrawler
   module LinkSelector
@@ -87,13 +88,17 @@ module NewsCrawler
       def run
         @status = :running
         return if @stoping
+        if @max_depth == 0
+          @status = :stopped
+          return
+        end
         while !@stoping
           url = next_unprocessed(@max_depth - 1)
           while (url.nil?)
             wait_for_url
             url = next_unprocessed(@max_depth - 1)
           end
-          puts "Processing #{url}"
+          NCLogger.get_logger.info "Processing #{url}"
           extract_url(url)
           mark_processed(url)
         end

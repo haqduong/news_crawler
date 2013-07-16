@@ -83,10 +83,12 @@ se = NewsCrawler::LinkSelector::SameDomainSelector.new(options[:max_depth] || 1,
 se.async.run
 puts "Stoping SDS"
 se.graceful_terminate
+se.terminate
 puts "SDS stopped"
 
-sleep(10)
+sleep(5)
 
 puts "Stoping Downloader"
 dwl.graceful_terminate
+dwl.terminate
 puts "Downloader stopped"
