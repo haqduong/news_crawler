@@ -88,10 +88,10 @@ module NewsCrawler
         @status = :running
         return if @stoping
         while !@stoping
-          url = next_unprocessed(@max_depth)
+          url = next_unprocessed(@max_depth - 1)
           while (url.nil?)
             wait_for_url
-            url = next_unprocessed(@max_depth)
+            url = next_unprocessed(@max_depth - 1)
           end
           puts "Processing #{url}"
           extract_url(url)
