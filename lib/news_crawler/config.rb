@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #--
 # NewsCrawler - a website crawler
 #
@@ -50,14 +51,3 @@ end
 
 NewsCrawler::CrawlerConfig.load_application_config
 NewsCrawler::CrawlerConfig.load_samedomainselector_config
-
-
-# SimpleConfig.for :same_domain_selector do
-#   group :exclude do
-#     set 'vnexpress.net', ['ban-doc', 'tam-su', 'cuoi', 'rss', 'anh',
-#                          'ban-doc-viet', 'contactus', 'block', 'raovat', 'video',
-#                          'contact.htm', 'tin-nong', 'tu-van', 'tuvan',
-#                          '24h-qua',
-#                          'cau-chuyen-cuoc-song', 'co-hoi-du-hoc']
-#   end
-# end

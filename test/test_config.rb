@@ -43,9 +43,9 @@ end
 
 SimpleConfig.for :same_domain_selector do
   group :exclude do
-    set 'vnexpress.net', ['ban-doc', 'tam-su', 'cuoi', 'rss', 'anh',
-                          'ban-doc-viet', 'contactus', 'block', 'raovat', 'video',
-                          'm.vnexpress.net', '/.*cuoi.*/']
+    set 'example.net', ['ban-doc', 'tam-su', 'cuoi', 'rss', 'anh',
+                        'ban-doc-viet', 'contactus', 'block', 'raovat', 'video',
+                        'm.example.net', '/.*cuoi.*/']
     set 'example.com', ['contactus']
   end
 end

@@ -20,6 +20,8 @@
 # along with NewsCrawler.  If not, see <http://www.gnu.org/licenses/>.
 #++
 
+# TODO implement easy API
+
 require 'news_crawler/autostart'
 require 'news_crawler/config'
 require 'news_crawler/downloader'
@@ -31,7 +33,6 @@ NewsCrawler::Storage::URLQueue.set_engine(:mongo)
 include NewsCrawler::Storage
 
 URLQueue.clear
-URLQueue.add('www.vnexpress.net')
 
 # RawData.clear
 # dwl = NewsCrawler::Downloader.new
@@ -40,7 +41,6 @@ URLQueue.add('www.vnexpress.net')
 # #dwl.graceful_terminate
 
 URLQueue.mark_all('NewsCrawler::LinkSelector::SameDomainSelector', "unprocessed")
-URLQueue.mark_visited('www.vnexpress.net')
 
 puts "Raw entries: #{RawData.count}"
 NewsCrawler::LinkSelector::SameDomainSelector.new

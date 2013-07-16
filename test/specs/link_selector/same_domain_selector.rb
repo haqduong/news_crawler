@@ -32,18 +32,18 @@ describe SameDomainSelector do
   end
 
   it 'should return true if url in exclude list' do
-    assert_equal SameDomainSelector.exclude?('http://vnexpress.net/ban-doc'), true
-    assert_equal SameDomainSelector.exclude?('http://vnexpress.net/ban-doc/anh'), true
-    assert_equal SameDomainSelector.exclude?('http://www.vnexpress.net/ban-doc/anh'), true
-    assert_equal SameDomainSelector.exclude?('http://www.vnexpress.net/block/anh'), true
-    assert_equal SameDomainSelector.exclude?('http://m.vnexpress.net/block/anh'), true
-    assert_equal SameDomainSelector.exclude?('http://vnexpress.net/block/anhcuoi'), true
+    assert_equal SameDomainSelector.exclude?('http://example.net/ban-doc'), true
+    assert_equal SameDomainSelector.exclude?('http://example.net/ban-doc/anh'), true
+    assert_equal SameDomainSelector.exclude?('http://www.example.net/ban-doc/anh'), true
+    assert_equal SameDomainSelector.exclude?('http://www.example.net/block/anh'), true
+    assert_equal SameDomainSelector.exclude?('http://m.example.net/block/anh'), true
+    assert_equal SameDomainSelector.exclude?('http://example.net/block/anhcuoi'), true
   end
 
   it 'should return false if url not in exclude list' do
-    assert_equal SameDomainSelector.exclude?('http://vnexpress.net/'), false
-    assert_equal SameDomainSelector.exclude?('http://vnexpress.net/tin-tuc'), false
-    assert_equal SameDomainSelector.exclude?('http://www.vnexpress.net/tin-tuc'), false
-    assert_equal SameDomainSelector.exclude?('http://www.example.net'), false
+    assert_equal SameDomainSelector.exclude?('http://example.net/'), false
+    assert_equal SameDomainSelector.exclude?('http://example.net/tin-tuc'), false
+    assert_equal SameDomainSelector.exclude?('http://www.example.net/tin-tuc'), false
+    assert_equal SameDomainSelector.exclude?('http://www.example.org'), false
   end
 end
