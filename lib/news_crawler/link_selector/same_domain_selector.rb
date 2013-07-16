@@ -124,12 +124,26 @@ module NewsCrawler
           end
         end
 
+        exclude_list = exclude_list.map do | elt |
+          if /^\/.*\/$/ =~ elt
+            Regexp.new(elt[1..-2])                        # already an Regex
+          else
+            new_elt = "^(.*/)?#{elt}(/.*)?$"
+            Regexp.new(new_elt)
+          end
+        end
+
         if exclude_list.count == 0
           return false
         end
 
-        url.split('/').each do | part |
-          if exclude_list.include? part
+        # url.split('/').each do | part |
+        #   if exclude_list.include? part
+        #     return true
+        #   end
+        # end
+        exclude_list.each do | exclude_rule |
+          if exclude_rule =~ url
             return true
           end
         end

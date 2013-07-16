@@ -36,6 +36,8 @@ describe SameDomainSelector do
     assert_equal SameDomainSelector.exclude?('http://vnexpress.net/ban-doc/anh'), true
     assert_equal SameDomainSelector.exclude?('http://www.vnexpress.net/ban-doc/anh'), true
     assert_equal SameDomainSelector.exclude?('http://www.vnexpress.net/block/anh'), true
+    assert_equal SameDomainSelector.exclude?('http://m.vnexpress.net/block/anh'), true
+    assert_equal SameDomainSelector.exclude?('http://vnexpress.net/block/anhcuoi'), true
   end
 
   it 'should return false if url not in exclude list' do
