@@ -24,6 +24,7 @@
 
 require 'optparse'
 require 'news_crawler/config'
+require 'news_crawler/nc_logger'
 
 require 'news_crawler/downloader'
 require 'news_crawler/link_selector/same_domain_selector'
@@ -45,6 +46,10 @@ OptionParser.new do | opts |
     raise Errno::ENOENT unless File.exists? options[:sds_conf]
   end
 
+  opts.on('-c', '--[no-]cleardb', "Clear database") do | cd |
+    options[:cleardb] = cd
+  end
+
   opts.on('-d', "--max-depth DEPTH", OptionParser::DecimalInteger,
           'Maximum depth of url to crawl') do  | d |
     options[:max_depth] = d
@@ -59,8 +64,10 @@ config = SimpleConfig.for :application
 NewsCrawler::Storage::RawData.set_engine(config.db.engine.intern)
 NewsCrawler::Storage::URLQueue.set_engine(config.db.engine.intern)
 
-URLQueue.clear
-RawData.clear
+if (options[:cleardb])
+  URLQueue.clear
+  RawData.clear
+end
 
 if ARGV.size > 0
   url = ARGV[0]
