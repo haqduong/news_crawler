@@ -70,7 +70,7 @@ module NewsCrawler
 
         # Mark an URL as visited
         # @param [ String ] url
-        def mark_visited(url, *opts)
+        def mark_visited(url)
           @coll.update({:url  => url},
                        {:$set => {:visited => true}})
         end

@@ -52,16 +52,11 @@ module NewsCrawler
           end
         end
 
-        # delegate request to the engine
-        def method_missing(name, url = '', *opts)
-          if ACTION_LIST.include? name
-            if url.size == 0
-              @engine.send(name, *opts)
-            else
-              url = normalize_url url
-              @engine.send(name, url, *opts)
-            end
-          end
+        # Mark an URL as visited
+        # @param [ String ] url
+        def mark_visited(url)
+          url = normalize_url url
+          @engine.mark_visited(url)
         end
 
         # Set processing state of url in given module
