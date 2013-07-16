@@ -51,11 +51,6 @@ OptionParser.new do | opts |
   end
 end.parse!
 
-if ARGV.length == 0
-  STDERR.puts "Missing url, see \"news_crawler -h\" for command usage"
-end
-
-url = ARGV[0]
 
 NewsCrawler::CrawlerConfig.load_application_config(options[:app_conf]) unless options[:app_conf].nil?
 NewsCrawler::CrawlerConfig.load_samedomainselector_config(options[:sds_conf]) unless options[:sds_conf].nil?
@@ -65,8 +60,12 @@ NewsCrawler::Storage::RawData.set_engine(config.db.engine.intern)
 NewsCrawler::Storage::URLQueue.set_engine(config.db.engine.intern)
 
 URLQueue.clear
-URLQueue.add(url)
 RawData.clear
+
+if ARGV.size > 0
+  url = ARGV[0]
+  URLQueue.add(url)
+end
 
 puts "Starting Downloader"
 dwl = NewsCrawler::Downloader.new(false)
