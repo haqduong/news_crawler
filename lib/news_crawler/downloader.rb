@@ -27,6 +27,7 @@ require 'simpleconfig'
 require 'news_crawler/config'
 require 'news_crawler/storage/raw_data'
 require 'news_crawler/utils/robots_patch'
+require 'news_crawler/nc_logger'
 
 module NewsCrawler
   # This class implement an parallel downloader based on Typhoes
@@ -65,7 +66,7 @@ module NewsCrawler
             Storage::RawData.add(url, response.response_body)
             @queue.mark_visited url
           else
-            raise "Fetch error"
+            NCLogger.get_logger.warn("[WARNING] Fetch error [#{url}]")
           end
         end
         hydra.queue re
