@@ -8,23 +8,22 @@ website analysis framework.
 
 Getting started
 ===============
-CLI
----
-    news_crawler -d <maximum depth> <url>
-You can pass configuration file to customize database parameter and
-modules' configuration.
+To crawl an site (e.g. www.example.com) with default configurations
+and modules
 
-Usage
-=====
-CLI
----
-    Usage: news_crawler [options] url
-        -c, --app-conf FILE              Application configuration file
-        -s, --sds-conf FILE              Same domain selector configuration file
-        -d, --max-depth DEPTH            Maximum depth of url to crawl
+    news_crawler www.example.com
+
+You can resume crawling by invoke without any arguments.
+
+    news_crawler
+
+For more informations, see NewsCrawler's
+[page](http://haqduong.github.io/news_crawler)
+
 
 Requirements
 ============
+
 * Ruby >= 1.9.3
 * MongoDB
 
