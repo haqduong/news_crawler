@@ -37,55 +37,86 @@ website analysis framework.</p>
 <h1>
 <a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h1>
 
-<h2>
-<a name="cli" class="anchor" href="#cli"><span class="octicon octicon-link"></span></a>CLI</h2>
+<p>To crawl a site (e.g. <a href="http://www.example.com">www.example.com</a>) with default configuration
+and modules</p>
 
-<pre><code>news_crawler -d &lt;maximum depth&gt; &lt;url&gt;
+<pre><code>news_crawler www.example.com
 </code></pre>
 
-<p>You can pass configuration file to customize database parameter and
-modules' configuration.</p>
+<p>You can resume crawling by invoke without any arguments.</p>
 
-<h1>
-<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
-
-<h2>
-<a name="cli-1" class="anchor" href="#cli-1"><span class="octicon octicon-link"></span></a>CLI</h2>
-
-<pre><code>Usage: news_crawler [options] url
-    -c, --app-conf FILE              Application configuration file
-    -s, --sds-conf FILE              Same domain selector configuration file
-    -d, --max-depth DEPTH            Maximum depth of url to crawl
+<pre><code>news_crawler
 </code></pre>
 
 <h1>
-<a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h1>
+<a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h1>
+
+<p>NewsCrawler can be configured via YAML file, configuration for each
+module is put on seperated file.</p>
+
+<h2>
+<a name="application-configuration" class="anchor" href="#application-configuration"><span class="octicon octicon-link"></span></a>Application configuration</h2>
+
+<p>Application's configuration can be loaded using <code>-c FILE</code> or <code>--app-conf FILE</code>
+option.</p>
+
+<p><strong>Default configuration</strong></p>
+
+<pre><code>db:                        # database section
+    :engine: :mongo        # database engine use (In the present, only MongoDB is support)
+
+:mongodb:                  # configuration for mongodb engine
+    :host: localhost
+    :port: !str 27017
+    :db_name: news-crawler
+
+:suffix:                   # suffix for each collection in database
+    :raw_data: raw_data
+    :url_queue: url_queue
+
+prefix: ''                 # prefix (e.g. for each site is crawled)
+</code></pre>
+
+<h2>
+<a name="included-module-configuration" class="anchor" href="#included-module-configuration"><span class="octicon octicon-link"></span></a>Included module configuration</h2>
+
+<h3>
+<a name="same-domain-selector" class="anchor" href="#same-domain-selector"><span class="octicon octicon-link"></span></a>Same domain selector</h3>
+
+<p>Same domain selector's configuration can be loaded using <code>-s FILE</code> or
+<code>--sds-conf FILE</code></p>
+
+<p><strong>Default configuration</strong></p>
+
+<pre><code>:exclude:
+</code></pre>
+
+<p>List entry has following format</p>
+
+<pre><code>domain:                    # e.g. example.com
+    - [exclude_domain_part or /regular_expression/]
+    - ...
+</code></pre>
+
+<p>Where:</p>
 
 <ul>
-<li>Ruby &gt;= 1.9.3</li>
-<li>MongoDB</li>
+<li>
+<em>exclude_domain_part</em> excludes URLs having the part seperated by <code>/</code> as
+specify. (e.g. <code>f1</code> exclude <code>example.com/f1</code>, <code>example.com/f1/f2</code>,...)</li>
+<li>
+<em>/regular_expression/</em> excludes URLs matching the
+regex. (e.g. <code>/.*relax.*/</code> exclude all URLs has <code>relax</code> in
+this)</li>
 </ul><h1>
-<a name="caution" class="anchor" href="#caution"><span class="octicon octicon-link"></span></a>Caution</h1>
+<a name="module-development" class="anchor" href="#module-development"><span class="octicon octicon-link"></span></a>Module development</h1>
 
-<p>This is a prelease version, so API can be changed significantly.</p>
+<p>TBA</p>
 
 <h1>
-<a name="copyright" class="anchor" href="#copyright"><span class="octicon octicon-link"></span></a>Copyright</h1>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h1>
 
-<p>Copyright (C) 2013 Hà Quang Dương <a href="mailto:contact@haqduong.net">contact@haqduong.net</a></p>
-
-<p>NewsCrawler is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.</p>
-
-<p>NewsCrawler is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.</p>
-
-<p>You should have received a copy of the GNU General Public License
-along with NewsCrawler.  If not, see <a href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>.</p>
+<p>TBA</p>
         </section>
 
         <aside id="sidebar">
