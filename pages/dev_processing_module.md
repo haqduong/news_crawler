@@ -6,7 +6,7 @@ description: ""
 ---
 {% include JB/setup %}
 
-Only 2 steps to integrate new module to NewsCrawler.
+Only 2 steps to integrate a new module to NewsCrawler.
 
 1. Include CrawlerModule
     class FooModule < NewsCrawler::CrawlerModule

@@ -69,5 +69,5 @@ Where:
   this)
 
 # What's next? #
-* To add new storage engine to crawler, see 
+* To add new storage engine to crawler, see [storage]({{BASE_PATH}}/pages/dev_storage_engine.html)
 * To add new processing module to crawler, see [processing module development]({{BASE_PATH}}/pages/dev_processing_module.html)
