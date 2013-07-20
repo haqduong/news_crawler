@@ -15,13 +15,13 @@ There are 2 main storage modules in NewsCrawler:
 
 # Storage engine development
 
-* Inherited corresponding class
-  (`NewsCrawler::Storage::RawData::RawDataEngine` and
-  ` NewsCrawler::Storage::URLQueue::URLQueueEngine`).
+1. Inherited corresponding class
+   (`NewsCrawler::Storage::RawData::RawDataEngine` and
+   ` NewsCrawler::Storage::URLQueue::URLQueueEngine`).
 
-* Give it a name by provide `NAME` constant.
+1. Give it a name by provide `NAME` constant.
 
-* Implement all methods with purpose described in API.
+1. Implement all methods with purpose described in API.
 
-* Use `URLQueue.set_engine` and `RawData.set_engine` to use your
-  engine (using `NAME` you specified above)
+1. Use `URLQueue.set_engine` and `RawData.set_engine` to use your
+   engine (using `NAME` you specified above)
