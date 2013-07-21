@@ -8,7 +8,7 @@ tagline: A flexible, modular web crawler
 # Getting started #
 
 To crawl a site (e.g. www.example.com) with default configuration
-and modules
+and modules (use MongoDB and same domain selector)
 
     news_crawler www.example.com
 
@@ -69,5 +69,7 @@ Where:
   this)
 
 # What's next? #
-* To add new storage engine to crawler, see [storage]({{BASE_PATH}}/pages/dev_storage_engine.html)
+
+* Using NewsCrawler as [library]({{BASE_PATH}}/pages/use_as_lib.html)
+* To add new storage engine to crawler, see [storage engine]({{BASE_PATH}}/pages/dev_storage_engine.html)
 * To add new processing module to crawler, see [processing module development]({{BASE_PATH}}/pages/dev_processing_module.html)
