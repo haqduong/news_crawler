@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #--
 # NewsCrawler - a website crawler
 #
@@ -37,6 +38,10 @@ describe MongoStorage do
     RawData.add(url, body)
     RawData.count.must_equal 1
     assert_equal body, RawData.find_by_url(url)
+  end
+
+  it 'should return nil if url is unvisited' do
+    assert_nil RawData.find_by_url('does_not_existed_url')
   end
 
   after do
