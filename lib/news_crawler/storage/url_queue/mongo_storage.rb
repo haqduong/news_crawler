@@ -72,7 +72,14 @@ module NewsCrawler
         # @param [ String ] url
         def mark_visited(url)
           @coll.update({:url  => url},
-                       {:$set => {:visited => true}})
+                       {:$set => {'visited' => true}})
+        end
+
+        # Mark all URLs as unvisited
+        def mark_all_unvisited
+          @coll.update({},
+                       {:$set => {'visited' => false}},
+                       {:multi => true})
         end
 
         # # Mark an URL as processed

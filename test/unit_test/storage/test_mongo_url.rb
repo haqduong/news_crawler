@@ -163,6 +163,15 @@ class TestURLMongoStorage < Minitest::Test
     assert_equal 1, processed.count
   end
 
+  def test_07_mark_all_unvisited
+    mark_all_url_as_visited
+    @engine.mark_all_unvisited
+
+    # all URL without processing status also treated as unprocessed
+    unvisited = @engine.find_unvisited
+    assert_equal 4, unvisited.count
+  end
+
   def init_sample_url
     @engine.add('http://www.example.com')
     @engine.add('http://www.test1.net')

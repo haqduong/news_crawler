@@ -59,6 +59,11 @@ module NewsCrawler
           @engine.mark_visited(url)
         end
 
+        # Mark all URLs as unvisited
+        def mark_all_unvisited
+          @engine.mark_all_unvisited
+        end
+
         # Set processing state of url in given module
         # @param [ String ] module_name
         # @param [ String ] url

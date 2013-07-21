@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #--
 # NewsCrawler - a website crawler
 #
@@ -98,6 +99,17 @@ module NewsCrawler
         # Clear URLQueue
         # @return [ Fixnum ] number of urls removed
         def clear
+          raise NotImplementedError
+        end
+
+        # Mark an URL as visited
+        # @param [ String ] url
+        def mark_visited(url)
+          raise NotImplementedError
+        end
+
+        # Mark all URLs as unvisited
+        def mark_all_unvisited
           raise NotImplementedError
         end
 

@@ -76,6 +76,12 @@ class TestURLQueueHelper < Minitest::Test
     assert_equal 1, after_processing_count - before_processing_count
   end
 
+  def test_04_mark_all_as_unvisited
+    mark_all_url_as_visited
+    URLQueue.mark_all_unvisited
+    assert_equal 4, URLQueue.find_unvisited.count
+  end
+
   def init_sample_url
     URLQueue.add('http://www.example.com')
     URLQueue.add('http://www.test1.net')
