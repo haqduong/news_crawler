@@ -34,13 +34,13 @@ module NewsCrawler
     end
 
     # Set logger level
-    # param [ Logger::Severity ] l level
+    # @param [ Logger::Severity ] l level
     def self.set_level(l)
       get_logger.level = l
     end
 
     # Set logger, should same API as Ruby Logger
-    # param [ Object ] l logger
+    # @param [ Object ] l logger
     def self.set_logdev(ld)
       @logger = Logger.new(ld)
       @logger.progname = 'news_crawler'
