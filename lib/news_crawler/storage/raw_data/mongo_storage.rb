@@ -43,8 +43,8 @@ module NewsCrawler
         end
 
         # Add entry to raw data collection, overwrite old data
-        # param [ String ] url
-        # param [ String ] body
+        # @param [ String ] url
+        # @param [ String ] body
         def add(url, body)
           @coll.update({:url   => url},
                        {:$set  => {:body => body}},

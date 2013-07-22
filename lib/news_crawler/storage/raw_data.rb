@@ -48,8 +48,8 @@ module NewsCrawler
         end
 
         # Add entry to raw data collection
-        # param [ String ] url
-        # param [ String ] body
+        # @param [ String ] url
+        # @param [ String ] body
         def add(url, body)
           @engine.add(url, body)
         end

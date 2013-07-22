@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #--
 # NewsCrawler - a website crawler
 #
@@ -41,8 +42,8 @@ module NewsCrawler
         end
 
         # Add entry to raw data collection
-        # param [ String ] url
-        # param [ String ] body
+        # @param [ String ] url
+        # @param [ String ] body
         def add(url, body)
           raise NotImplementedError
         end
