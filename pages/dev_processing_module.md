@@ -22,4 +22,8 @@ Only 2 steps to integrate a new module to NewsCrawler.
 
 1. Process it.
 
+1. Mark it as processed.
+
+    `mark_processed(<url>)`
+
 1. Store it somewhere (*I'll provide storage soon*)

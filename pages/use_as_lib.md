@@ -11,6 +11,7 @@ You can use NewsCrawler as a library.
 1. Require basic module
 
     require 'news_crawler'
+
     require 'news_crawler/config'
 
 1. Load application (and modules) configuration (or you can setup
@@ -32,7 +33,9 @@ You can use NewsCrawler as a library.
 
 1. To stop downloader and processing module
 
-    dwl.graceful_terminate    # Wait for all downloading threads are stopped
+    dwl.graceful_terminate    # Wait for all downloading threads are
+    stopped
+
     dwl.terminate             # Celluloid actor terminate
 
 -------------------------------
