@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #--
 # NewsCrawler - a website crawler
 #
@@ -75,6 +76,15 @@ class TestURLHelper < Minitest::Test
     assert_equal(false,
                  same_domain?('www.example',
                               'http://www.example.com/aba'))
+  end
+
+  def test_same_domain_abs_path
+    assert_equal(true,
+                 same_domain?('/', 'http://www.example.com'))
+    assert_equal(true,
+                 same_domain?('/path/path', 'http://www.example.com'))
+    assert_equal(true,
+                 same_domain?('/path/path', '/'))
   end
 
   def test_url_path_full_part
