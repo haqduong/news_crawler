@@ -22,6 +22,7 @@
 
 require 'celluloid'
 require 'nokogiri'
+require 'uri'
 
 require 'news_crawler/storage/raw_data'
 require 'news_crawler/url_helper'
@@ -60,13 +61,14 @@ module NewsCrawler
         inner_url = html_doc.xpath('//a').collect { | a_el |
           temp_url = (a_el.attribute 'href').to_s
           if (!temp_url.nil?) && (temp_url[0] == '/')
-            temp_url = url + temp_url
+            temp_url = URI.join(url, temp_url).to_s
           end
           temp_url
         }
 
         inner_url.delete_if { | url |
-            (url.nil?) || (url.size == 0) || (url == '#')
+            (url.nil?) || (url.size == 0) || (url == '#') ||
+          (url == 'javascript:;')
         }
 
         # select url from same domain

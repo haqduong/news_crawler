@@ -29,13 +29,23 @@ require 'news_crawler/crawler_module'
 
 module NewsCrawler
   module Processing
-    # Analyze website structure to extract content
+    # Analyse website structure to extract content
     # Database should only contains raw data from one website.
     class StructureAnalysis
       include CrawlerModule
 
-      def analysis
-        
+      def initialize
+        @url_stats = {}
+        while (url = next_unprocessed)
+          analyse(url)
+        end
+      end
+
+      # Get and analyse url for information
+      def analyse(url)
+        html_doc = RawData.find_by_url(url)
+        doc = Nokogiri.HTML(html_doc)
+        doc.xpath('//a')
       end
     end
   end
