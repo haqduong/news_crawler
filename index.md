@@ -5,6 +5,12 @@ tagline: A flexible, modular web crawler
 ---
 {% include JB/setup %}
 
+# Installation #
+
+    gem install news_crawler
+
+---------------------------------------------
+
 # Getting started #
 
 To crawl a site (e.g. www.example.com) with default configuration
