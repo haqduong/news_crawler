@@ -2,7 +2,7 @@ require 'rake'
 
 Gem::Specification.new do | s |
   s.name    = 'news_crawler'
-  s.version = '0.0.2'
+  s.version = '0.0.3'
 
   s.summary     = 'News crawler'
   s.description = 'A flexible, modular web crawler'

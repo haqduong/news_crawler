@@ -48,8 +48,21 @@ class SameDomainSelectorTest < Minitest::Test
 </body>
 </html>
 HTML
+
+    html_doc_1 = <<HTML
+<html>
+<head><title></title></head>
+<body>
+<a href="/path/to/file1.html">File1</a>
+<div id="contact">
+   <a href="/contactus">Contact</a>
+</div>
+</body>
+</html>
+HTML
     @fake_rawdata = mock()
-    @fake_rawdata.stubs(:find_by_url).returns(html_doc)
+    @fake_rawdata.stubs(:find_by_url).with('http://www.example.com').returns(html_doc)
+    @fake_rawdata.stubs(:find_by_url).with('http://www.example.com/p1/').returns(html_doc_1)
     URLQueue.set_engine(@fake_urlqueue)
     RawData.set_engine(@fake_rawdata)
     @selector = SameDomainSelector.new(-1, false)
@@ -60,6 +73,8 @@ HTML
                   "http://www.example.com/path/to/file.html",
                   "http://www.example.com/path/to/file1.html",],
                  @selector.extract_url("http://www.example.com"))
+    assert_equal(["http://www.example.com/path/to/file1.html"],
+                 @selector.extract_url("http://www.example.com/p1/"))
   end
 
   def teardown
