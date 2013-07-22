@@ -81,6 +81,8 @@ dwl.async.run
 puts "Starting SDS"
 se = NewsCrawler::LinkSelector::SameDomainSelector.new(options[:max_depth] || 1, false)
 se.async.run
+
+sleep(5)
 puts "Stoping SDS"
 se.graceful_terminate
 se.terminate
