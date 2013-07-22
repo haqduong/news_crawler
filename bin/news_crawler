@@ -28,6 +28,7 @@ require 'news_crawler/nc_logger'
 
 require 'news_crawler/downloader'
 require 'news_crawler/link_selector/same_domain_selector'
+require 'news_crawler/storage/url_queue'
 
 include NewsCrawler::Storage
 
@@ -54,6 +55,12 @@ OptionParser.new do | opts |
           'Maximum depth of url to crawl') do  | d |
     options[:max_depth] = d
   end
+
+  opts.on('-t', "--time-out TIME", OptionParser::DecimalInteger,
+          "Wait time (in sec) before stop crawl (crawler is\'nt stopped immediately but terminated gracefully)", 
+          "If time out isn't specified you can stop crawler by press Ctrl-C") do | t |
+    options[:time_out] = t
+  end
 end.parse!
 
 
@@ -71,7 +78,11 @@ end
 
 if ARGV.size > 0
   url = ARGV[0]
-  URLQueue.add(url)
+  begin
+    URLQueue.add(url)
+    rescue NewsCrawler::Storage::URLQueue::DuplicateURLError
+    NewsCrawler::NCLogger.get_logger.info("URL existed")
+  end
 end
 
 puts "Starting Downloader"
@@ -82,14 +93,21 @@ puts "Starting SDS"
 se = NewsCrawler::LinkSelector::SameDomainSelector.new(options[:max_depth] || 1, false)
 se.async.run
 
-sleep(5)
+if options[:time_out]
+  sleep(options[:time_out])
+else
+  stop = false
+  while(!stop)
+    Signal.trap("INT") do | signo |
+      stop = true
+    end
+  end
+end
+
 puts "Stoping SDS"
 se.graceful_terminate
 se.terminate
 puts "SDS stopped"
-
-sleep(5)
-
 puts "Stoping Downloader"
 dwl.graceful_terminate
 dwl.terminate
