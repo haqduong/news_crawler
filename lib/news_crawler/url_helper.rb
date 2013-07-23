@@ -23,8 +23,7 @@
 module NewsCrawler
   # Contains various method for processing url
   module URLHelper
-    # produce true if 2 urls belong to same domain, or url is absolute
-    # (start with '/')
+    # produce true if 2 urls belong to same domain, or url is start with '/'
     # @param  [ String  ] url1 Url 1
     # @param  [ String  ] url2 Url 2
     # @return [ Boolean ] true if both url belong to same domain
