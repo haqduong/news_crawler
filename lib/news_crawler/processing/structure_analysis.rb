@@ -39,13 +39,209 @@ module NewsCrawler
       def initialize
         @url_stats = {}
         while (url = next_unprocessed)
-          analyse(url)
+          #analyse(url)
+          STDERR.puts "Processing #{url}"
+          @url_stats[url] = extract_content(url)
         end
       end
 
+      def extract_content(url)
+        html_doc = RawData.find_by_url(url)
+
+        # Remove tag causing trouble to nokogiri
+        html_doc = remove_tag(html_doc, 'script')
+        html_doc = remove_tag(html_doc, 'iframe')
+        html_doc = remove_tag(html_doc, 'style')
+
+        doc = Nokogiri::HTML.parse(html_doc)
+        longest = find_longest_node(doc)
+        lowest_ancestor, path_to_longest = find_lowest_ancestor_has_id(longest)
+
+        # Heuristic 1
+        # Longest content is a element as id attribute
+        if path_to_longest.length == 2
+          return { :type => :list }
+        end
+
+        parent = path_to_longest[1..-1]
+        parent = parent.reverse
+        xpath_path = parent.join('/')
+        xpath_path = '//' + xpath_path + '//text()'
+
+        guest_type = classify_h2(longest, lowest_ancestor)
+        result = { :type => guest_type }
+
+        mark_processed(url)
+        result
+      end
+
+      # Predict type of tree point by root is fragment of article or index page
+      # @param [ Nokogiri::XML::Node ] root
+      # @paran [ Nokogiri::XML::Node ] limit limit node to search backward
+      # @return [ Symbol ] one of :article, :list
+      def classify_h2(root, limit)
+        current = root
+        current = current.parent if current.text?
+
+        depth = 0
+
+        while true
+          expect_hash = hash_node(current, 0)
+          previous = current
+          current = current.parent
+
+          depth += 1
+          lons = {}
+          node_count = 0
+          node_list = [previous]
+          current.children.each do | child |
+            hc = hash_node(child, depth - 1)
+            if hc == expect_hash
+              node_count += 1
+              node_list << child
+            end
+          end
+
+          if node_count > 1
+            a_tag_len, non_a_tag_len = count_a_and_non_a_tag(current)
+            if non_a_tag_len > a_tag_len
+              return :article
+            else
+              return :list
+            end
+            break
+          end
+
+          if current == limit
+            a_tag_len, non_a_tag_len = count_a_and_non_a_tag(current)
+            if non_a_tag_len > a_tag_len
+              return :article
+            else
+              return :list
+            end
+            break
+          end
+        end
+
+        return :list
+      end
+
+      # Count a tag and non-a tag in tree pointed by node
+      # @param [ Nokogiri::XML::Node ] node
+      # @return [ [Fixnum, Fixnum] ] a tag and non-a tag
+      def count_a_and_non_a_tag(node)
+        a_tag_list = node.xpath './/a'
+        a_tag_len = a_tag_list.count # number of a tag
+
+        non_a_tag_list = node.xpath './/text()[not (ancestor::a)]'
+        non_a_tag_len = non_a_tag_list.to_a.inject(0) do | memo, node |
+          if node.content.gsub(/\s+/, '').length > 15
+            memo + 1
+          else
+            memo
+          end
+        end
+        [ a_tag_len, non_a_tag_len ]
+      end
+
+      # Find the lowest node's ancestor has id attribute
+      # @param [ Nokogiri::XML::Node ] node
+      # @return [ Nokogiri::XML::Node ]
+      def find_lowest_ancestor_has_id(node)
+        found_id = false
+
+        closest_ancestor = node
+
+        path_to_closest = []
+
+        while (!found_id)
+          if closest_ancestor.has_attribute?('id')
+            path_to_closest << "#{closest_ancestor.node_name}[@id='#{closest_ancestor.attribute('id')}']"
+            found_id = true
+          else
+            if closest_ancestor.has_attribute?('class')
+              node_class = "@class = '#{closest_ancestor.attribute('class')}'"
+            else
+              node_class = 'not(@class)'
+            end
+            path_to_closest << "#{closest_ancestor.node_name}[#{node_class}]"
+            closest_ancestor = closest_ancestor.parent
+          end
+        end
+
+        return [ closest_ancestor, path_to_closest ]
+      end
+
+      # Find longest text node that doesn't have a in ancestors list
+      # @param [ Nokogiri::XML::Node ] doc
+      def find_longest_node(doc)
+        xpath_query = '//*[@id]//text()[not (ancestor::a)]'
+
+        a_l = doc.xpath xpath_query
+
+        longest = nil
+        longest_len = 0
+
+        a_l.each do | en |
+          node_content_wo_space = en.content.gsub(/\s/, '') # trick here
+          if node_content_wo_space.length > longest_len
+            longest_len = node_content_wo_space.length
+            longest = en
+          end
+        end
+
+        return longest
+      end
+
+      # Remove unwanted HTML tag
+      # @param [ String ] html_doc HTML document
+      # @param [ String ] tag tag to be removed
+      def remove_tag(html_doc, tag)
+        pattern = Regexp.new("<#{tag}.*?>.*?</#{tag}>", Regexp::MULTILINE)
+        html_doc.gsub(pattern, '')
+      end
+
+      # Return String represents node's name, node's id and node's class
+      # @param [ Nokogiri::XML::Node ] node
+      # @return [ String ]
+      def node_info(node)
+        node_pp = node.node_name
+        node_pp += '#' + node.attribute('id') if node.has_attribute?('id')
+        node_pp += '.' + node.attribute('class') if node.has_attribute?('class')
+        node_pp
+      end
+
+      # Calculate hash of a node by its and children info
+      # @param [ Nokogiri::XML::Node ] node
+      # @param [ Fixnum ] limit limit depth of children (-1 for unlimited)
+      # @return [ String ] Hash of node in base 64 encode
+      def hash_node(node, limit = -1)
+        node_sign = node.node_name
+        node_sign += "##{node['id']}" unless node['id'].nil?
+        node_sign += ".#{node['class']}" unless node['class'].nil?
+
+        hash_sum = node_sign
+
+        if limit != 0
+          child_hash = Set.new
+          node.children.each do | child_node |
+            child_hash.add(hash_node(child_node, limit - 1))
+          end
+
+          child_hash.each do | ch |
+            hash_sum += ch
+          end
+        else
+
+        end
+
+        Digest::SHA2.new.base64digest(hash_sum)
+      end
+
+
       # Get and analyse url for information
       def analyse(url)
-#        puts "processing #{url}"
+        #        puts "processing #{url}"
         html_doc = RawData.find_by_url(url)
         doc = Nokogiri.HTML(html_doc)
         inner_url = doc.xpath('//a').collect { | a_el |
