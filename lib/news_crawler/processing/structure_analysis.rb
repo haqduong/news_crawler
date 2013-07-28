@@ -47,6 +47,8 @@ module NewsCrawler
 
       def extract_content(url)
         html_doc = RawData.find_by_url(url)
+        result = {}
+        result[:type] == :article
 
         # Remove tag causing trouble to nokogiri
         html_doc = remove_tag(html_doc, 'script')
@@ -70,6 +72,20 @@ module NewsCrawler
 
         guest_type = classify_h2(longest, lowest_ancestor)
         result = { :type => guest_type }
+
+        if (result[:type] == :article)
+          title_ = lowest_ancestor.css('h1')
+          if title_.count == 1
+            result[:title] = title_.to_a[0].content
+          end
+
+          main_content = ''
+          lowest_ancestor.xpath(xpath_path).each do | node |
+            main_content += node.content
+          end
+
+          result[:content] = main_content
+        end
 
         mark_processed(url)
         result
