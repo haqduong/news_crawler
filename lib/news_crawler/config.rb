@@ -21,6 +21,7 @@
 #++
 
 require 'simple_config'
+require 'yaml'
 
 module NewsCrawler
   class CrawlerConfig
@@ -32,17 +33,32 @@ module NewsCrawler
     def self.load_application_config(file = CrawlerConfig::DEFAULT_CONFIG)
       if ((file != DEFAULT_CONFIG) || (@app_loaded != true))
         @app_loaded = true
-        SimpleConfig.for :application do
-          load file
-        end
+        merge_config(:application, file)
       end
     end
 
     def self.load_samedomainselector_config(file = CrawlerConfig::DEFAULT_SDS_CONFIG)
       if ((file != DEFAULT_SDS_CONFIG) || (@sds_loaded != true))
         @sds_loaded = true
-        SimpleConfig.for :same_domain_selector do
-          load file
+        merge_config(:same_domain_selector, file)
+      end
+    end
+
+    def merge_config(mod, file)
+      conf = YAML.load_file(file)
+      conf.each do | key, val |
+        if val.is_a? Hash
+          val.each do | k1, v1 |
+            SimpleConfig.for mod do
+              group key do
+                set k1, v1
+              end
+            end
+          end
+        else
+          SimpleConfig.for mod do
+            set key, val
+          end
         end
       end
     end
