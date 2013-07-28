@@ -67,7 +67,8 @@ module NewsCrawler
         }
 
         inner_url.delete_if { | url |
-            (url.nil?) || (url.size == 0) || (url == '#')
+            (url.nil?) || (url.size == 0) || (url == '#') ||
+          (url == 'javascript:;')
         }
 
         # select url from same domain
@@ -118,10 +119,12 @@ module NewsCrawler
           return false
         end
 
-        exclude_group.to_hash.keys.each do | url_e |
-          if url_domain.to_s.end_with? url_e.to_s
-            exclude_list = config.exclude.get(url_e)
-            break
+        unless exclude_group.nil?
+          exclude_group.to_hash.keys.each do | url_e |
+            if url_domain.to_s.end_with? url_e.to_s
+              exclude_list = config.exclude.get(url_e)
+              break
+            end
           end
         end
 

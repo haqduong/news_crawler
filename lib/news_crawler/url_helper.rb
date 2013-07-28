@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #--
 # NewsCrawler - a website crawler
 #
@@ -22,11 +23,14 @@
 module NewsCrawler
   # Contains various method for processing url
   module URLHelper
-    # produce true if 2 urls belong to same domain
+    # produce true if 2 urls belong to same domain, or url is start with '/'
     # @param  [ String  ] url1 Url 1
     # @param  [ String  ] url2 Url 2
     # @return [ Boolean ] true if both url belong to same domain
     def same_domain?(url1, url2)
+      if (url1[0] == '/') || (url2[0] == '/')
+        return true
+      end
       p1 = get_url_path(url1)
       p2 = get_url_path(url2)
       d1 = p1[:domain].split('.').reverse
