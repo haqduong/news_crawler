@@ -23,6 +23,7 @@
 require 'mongo'
 require 'simple_config'
 require 'news_crawler/storage/raw_data/raw_data_engine'
+require 'news_crawler/nc_logger'
 
 
 module NewsCrawler
@@ -46,6 +47,7 @@ module NewsCrawler
         # @param [ String ] url
         # @param [ String ] body
         def add(url, body)
+          body.encode!('utf-8', :invalid => :replace, :undef => :replace)
           @coll.update({:url   => url},
                        {:$set  => {:body => body}},
                        {:upsert => true})
