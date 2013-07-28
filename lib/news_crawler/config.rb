@@ -44,7 +44,7 @@ module NewsCrawler
       end
     end
 
-    def merge_config(mod, file)
+    def self.merge_config(mod, file)
       conf = YAML.load_file(file)
       conf.each do | key, val |
         if val.is_a? Hash
