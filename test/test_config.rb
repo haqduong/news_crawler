@@ -36,6 +36,7 @@ SimpleConfig.for :application do
   group :suffix do
     set :raw_data, 'raw_data'
     set :url_queue, 'url_queue'
+    set :yaml, 'yaml'
   end
 
   set :prefix, ''
