@@ -47,25 +47,25 @@ class TestYAMLStor < Minitest::Test
   def test_01_add_entries
     assert_equal 3, YAMLStor.count
     h3 = {:c => 1, :b => 2}
-    YAMLStor.add('mod3', 'conf', h3.to_yaml)
+    YAMLStor.add('mod3', 'conf', h3)
     assert_equal 4, YAMLStor.count
     rh = YAMLStor.get('mod3', 'conf')
-    assert_equal rh, h3.to_yaml
+    assert_equal rh, h3
   end
 
   def test_02_update_entry
     h3 = {:c => 1, :b => 2}
-    YAMLStor.add('mod1', 'conf', h3.to_yaml)
+    YAMLStor.add('mod1', 'conf', h3)
     rh = YAMLStor.get('mod1', 'conf')
-    assert_equal rh, h3.to_yaml
+    assert_equal rh, h3
   end
 
 
   def init_sample_data
     @h1 = {:a => 1, :b => 2}
     @h2 = {:a => 3, :b => 2}
-    YAMLStor.add('mod1', 'conf', @h1.to_yaml)
-    YAMLStor.add('mod1', 'data', @h1.to_yaml)
-    YAMLStor.add('mod2', 'conf', @h2.to_yaml)
+    YAMLStor.add('mod1', 'conf', @h1)
+    YAMLStor.add('mod1', 'data', @h1)
+    YAMLStor.add('mod2', 'conf', @h2)
   end
 end

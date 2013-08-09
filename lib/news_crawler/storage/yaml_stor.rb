@@ -52,7 +52,7 @@ module NewsCrawler
         # Add entry to YAML storage
         # @param [ String ] module_name
         # @param [ String ] key
-        # @param [ String ] value YAML string
+        # @param [ String ] value object to serialize
         def add(module_name, key, value)
           @engine.add(module_name, key, value)
         end
@@ -60,7 +60,7 @@ module NewsCrawler
         # Find document with correspond key
         # @param  [ String ]      module_name
         # @param  [ String ]      key
-        # @return [ String, nil ]
+        # @return [ Object, nil ]
         def get(module_name, key)
           @engine.get(module_name, key)
         end

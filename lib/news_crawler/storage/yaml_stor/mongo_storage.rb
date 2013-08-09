@@ -21,6 +21,7 @@
 #++
 
 require 'mongo'
+require 'yaml'
 require 'simple_config'
 require 'news_crawler/storage/yaml_stor/yaml_stor_engine'
 require 'news_crawler/nc_logger'
@@ -46,24 +47,25 @@ module NewsCrawler
         # Add entry to yaml collection, overwrite old data
         # @param [ String ] module_name
         # @param [ String ] key
-        # @param [ String ] value YAML string
+        # @param [ Object ] value YAML string
         def add(module_name, key, value)
-          value.encode!('utf-8', :invalid => :replace, :undef => :replace)
+          yaml_str = value.to_yaml
+          yaml_str.encode!('utf-8', :invalid => :replace, :undef => :replace)
           @coll.update({:key   => key,
                          :m_name => module_name},
-                       {:$set  => {:value => value}},
+                       {:$set  => {:value => yaml_str}},
                        {:upsert => true})
         end
 
         # Find document with correspond key
         # @param  [ String ] module_name
         # @param  [ String      ] key
-        # @return [ String, nil ]
+        # @return [ Object, nil ]
         def get(module_name, key)
           result = @coll.find_one({:key => key,
                                     :m_name => module_name})
           if (!result.nil?)
-            result['value']
+            YAML.load(result['value'])
           else
             nil
           end

@@ -44,7 +44,7 @@ module NewsCrawler
         # Add entry to raw data collection
         # @param [ String ] module_name
         # @param [ String ] key
-        # @param [ String ] value
+        # @param [ Object ] value
         def add(module_name, key, value)
           raise NotImplementedError
         end
@@ -52,7 +52,7 @@ module NewsCrawler
         # Get entry to raw data collection
         # @param [ String ] module_name
         # @param [ String ] key
-        # @return [ String, nil ] Value or nil if key isn't found
+        # @return [ Object, nil ] Value or nil if key isn't found
         def get(module_name, key)
           raise NotImplementedError
         end
