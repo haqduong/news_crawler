@@ -40,9 +40,11 @@ module NewsCrawler
       def initialize
         @url_stats = {}
         while (url = next_unprocessed)
-          #analyse(url)
-          STDERR.puts "Processing #{url}"
-          @url_stats[url] = extract_content(url)
+          #!!! log here
+          #STDERR.puts "Processing #{url}"
+          re = extract_content(url)
+          @url_stats[url] = re
+          save_yaml(re)
         end
       end
 
