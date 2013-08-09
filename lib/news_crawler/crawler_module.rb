@@ -69,6 +69,10 @@ module NewsCrawler
       URLQueue.next_unprocessed(self.class.name, max_depth)
     end
 
+    def mark_all_as_unprocessed
+      URLQueue.mark_all(self.class.name, URLQueue::UNPROCESSED)
+    end
+
     # Serialize object to YAML and save it (overwrite if key existed)
     # @param [ String ] key
     # @param [ Object ] value

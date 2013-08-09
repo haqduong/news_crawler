@@ -26,8 +26,8 @@ require 'uri'
 require 'news_crawler/url_helper'
 require 'news_crawler/storage/url_queue'
 require 'news_crawler/storage/raw_data'
-require 'news_crawler/storage/yaml_stor'
 require 'news_crawler/crawler_module'
+require 'news_crawler/nc_logger'
 
 module NewsCrawler
   module Processing
@@ -40,8 +40,7 @@ module NewsCrawler
       def initialize
         @url_stats = {}
         while (url = next_unprocessed)
-          #!!! log here
-          #STDERR.puts "Processing #{url}"
+          NCLogger.get_logger.info "[NC::P::SA] Processing #{url}"
           re = extract_content(url)
           @url_stats[url] = re
           save_yaml(re)
