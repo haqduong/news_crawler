@@ -26,6 +26,7 @@ require 'uri'
 require 'news_crawler/url_helper'
 require 'news_crawler/storage/url_queue'
 require 'news_crawler/storage/raw_data'
+require 'news_crawler/storage/yaml_stor'
 require 'news_crawler/crawler_module'
 
 module NewsCrawler

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #--
 # NewsCrawler - a website crawler
 #
@@ -20,7 +21,8 @@
 #++
 
 require 'news_crawler/storage/url_queue'
-require 'thread'
+require 'news_crawler/storage/yaml_stor'
+
 
 module NewsCrawler
   # Include this to get basic module methods
@@ -65,6 +67,20 @@ module NewsCrawler
     # @return [ String, nil ] URL or nil if url doesn't exists
     def next_unprocessed(max_depth = -1)
       URLQueue.next_unprocessed(self.class.name, max_depth)
+    end
+
+    # Serialize object to YAML and save it (overwrite if key existed)
+    # @param [ String ] key
+    # @param [ Object ] value
+    def save_yaml(key, value)
+      YAMLStor.add(self.class.name, key, value)
+    end
+
+    # Load YAML object
+    # @param  [ String ]      key
+    # @return [ Object, nil ]
+    def load_yaml(key, value)
+      YAMLStor.get(self.class.name, key, value)
     end
   end
 end
