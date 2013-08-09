@@ -1,4 +1,4 @@
-db:
+:db:
   :engine: :mongo
 
 :mongodb:
@@ -11,4 +11,4 @@ db:
   :url_queue: url_queue
   :yaml: yaml
 
-prefix: ''
+:prefix: ''

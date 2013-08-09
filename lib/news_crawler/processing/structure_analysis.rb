@@ -43,7 +43,7 @@ module NewsCrawler
           NCLogger.get_logger.info "[NC::P::SA] Processing #{url}"
           re = extract_content(url)
           @url_stats[url] = re
-          save_yaml(re)
+          save_yaml(url, re)
         end
       end
 
@@ -79,6 +79,9 @@ module NewsCrawler
           title_ = lowest_ancestor.css('h1')
           if title_.count == 1
             result[:title] = title_.to_a[0].content
+          else
+            # if cann't guest title then assume it isn't an article
+            result[:type] = :list
           end
 
           main_content = ''
