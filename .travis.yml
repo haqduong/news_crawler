@@ -5,3 +5,8 @@ rvm:
   - jruby-1.7.4
 
 services: mongodb
+
+branches:
+  only:
+    - master
+    - prerelease
