@@ -42,18 +42,22 @@ module NewsCrawler
     # @param [ NewsCrawler::URLQueue ] queue url queue
     def initialize(start_on_create = true, queue = NewsCrawler::Storage::URLQueue, **opts)
       @queue = queue
-      @urls = queue.find_unvisited
       @concurrent_download = opts[:concurrent] || CONCURRENT_DOWNLOAD
       @wait_time = 1
-      @status = :running
       @stoping = false
+      get_new_url
       wait_for_url if start_on_create
     end
 
     # Start downloader with current queue
     # URL successed fetch is marked and result's stored in DB
     def run
-      @status = :running
+      wait_for_url
+    end
+
+    private
+    # Download urls are given (in @urls)
+    def download
       hydra = Typhoeus::Hydra.new(max_concurrency: @concurrent_download)
       # TODO Log here
       @urls = @urls.keep_if do | url |
@@ -73,40 +77,40 @@ module NewsCrawler
         re
       end
       hydra.run
-      @urls = []
-      wait_for_url
     end
 
-    # Graceful terminate this downloader
-    def graceful_terminate
-      @stoping = true
-      while @status == :running
-        sleep(1)
-      end
-    end
-
-    private
     # Waiting for new urls're added to queue, using backoff algorithms
+    # Invoke download when suitable
     def wait_for_url
-      @status = :waiting
-      if @stoping # check for stop flag
-        return
-      end
-      sleep @wait_time
-      get_new_url
-      if @urls.size == 0
-        if @wait_time < 30
-          @wait_time = @wait_time * 2
+      while not @stoping do
+        if @queuing_urls.size == 0
+          get_new_url
         end
-        wait_for_url
-      else
-        @wait_time = 1
-        run
+        if @queuing_urls.size == 0
+          backoff_sleep
+        else
+          if @stoping
+            return
+          end
+          @wait_time = 1
+          @urls = @queuing_urls.shift(@concurrent_download * 2)
+          download
+          sleep 0.01 # delay to receive terminate signal
+        end
+      end
+    end
+
+    # Sleep using backoff algorithm
+    # @params [ Fixnum ] seconds
+    def backoff_sleep
+      sleep @wait_time
+      if @wait_time * 2 <= 4
+        @wait_time = @wait_time * 2
       end
     end
 
     def get_new_url
-      @urls = @queue.find_unvisited
+      @queuing_urls = @queue.find_unvisited
     end
   end
 end

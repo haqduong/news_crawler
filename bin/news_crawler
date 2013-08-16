@@ -57,7 +57,7 @@ OptionParser.new do | opts |
   end
 
   opts.on('-t', "--time-out TIME", OptionParser::DecimalInteger,
-          "Wait time (in sec) before stop crawl (crawler is\'nt stopped immediately but terminated gracefully)", 
+          "Wait time (in sec) before stop crawl",
           "If time out isn't specified you can stop crawler by press Ctrl-C") do | t |
     options[:time_out] = t
   end
@@ -97,18 +97,16 @@ if options[:time_out]
   sleep(options[:time_out])
 else
   stop = false
-  while(!stop)
+  while(not stop)
     Signal.trap("INT") do | signo |
       stop = true
     end
   end
 end
 
-puts "Stoping SDS"
-se.graceful_terminate
-se.terminate
-puts "SDS stopped"
 puts "Stoping Downloader"
-dwl.graceful_terminate
 dwl.terminate
 puts "Downloader stopped"
+puts "Stoping SDS"
+se.terminate
+puts "SDS stopped"

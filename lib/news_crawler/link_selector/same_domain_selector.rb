@@ -87,6 +87,7 @@ module NewsCrawler
         }
       end
 
+      # run selector
       def run
         @status = :running
         return if @stoping
@@ -94,7 +95,7 @@ module NewsCrawler
           @status = :stopped
           return
         end
-        while !@stoping
+        while true do
           url = next_unprocessed(@max_depth - 1)
           while (url.nil?)
             wait_for_url
@@ -103,6 +104,7 @@ module NewsCrawler
           NCLogger.get_logger.info "Processing #{url}"
           extract_url(url)
           mark_processed(url)
+          sleep 0.01 # delay to receive terminate signal
         end
       end
 
@@ -154,20 +156,12 @@ module NewsCrawler
         return false
       end
 
-      # Graceful terminate this selector
-      def graceful_terminate
-        @stoping = true
-        while @status == :running
-          sleep(1)
-        end
-      end
-
       private
       # Waiting for new urls're added to queue, using backoff algorithms
       def wait_for_url
         @status = :waiting
         sleep @wait_time
-        if @wait_time < 30
+        if @wait_time < 4
           @wait_times = @wait_time * 2
         end
       end
