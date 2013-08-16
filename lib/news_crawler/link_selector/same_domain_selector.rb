@@ -155,6 +155,7 @@ module NewsCrawler
       end
 
       # Graceful terminate this selector
+      # @deprecated You should terminate it since this method isn't stable
       def graceful_terminate
         @stoping = true
         while @status == :running
