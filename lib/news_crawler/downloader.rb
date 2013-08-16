@@ -44,7 +44,6 @@ module NewsCrawler
       @queue = queue
       @concurrent_download = opts[:concurrent] || CONCURRENT_DOWNLOAD
       @wait_time = 1
-      @status = :running
       @stoping = false
       get_new_url
       wait_for_url if start_on_create
@@ -56,21 +55,9 @@ module NewsCrawler
       wait_for_url
     end
 
-    # Graceful terminate this downloader
-    # @deprecated You should terminate it since this method isn't stable
-    def graceful_terminate
-      @stoping = true
-      NCLogger.get_logger.info "Status: #{@status}"
-      while @status == :running
-
-      end
-      NCLogger.get_logger.info "Status: #{@status}"
-    end
-
     private
     # Download urls are given (in @urls)
     def download
-      @status = :running
       hydra = Typhoeus::Hydra.new(max_concurrency: @concurrent_download)
       # TODO Log here
       @urls = @urls.keep_if do | url |
@@ -100,28 +87,24 @@ module NewsCrawler
           get_new_url
         end
         if @queuing_urls.size == 0
-          @status = :waiting
           backoff_sleep
         else
           if @stoping
-            @status = :stopped
             return
           end
           @wait_time = 1
           @urls = @queuing_urls.shift(@concurrent_download * 2)
           download
-          NCLogger.get_logger.info "Downloaded #{@urls.size} urls"
+          sleep 0.01 # delay to receive terminate signal
         end
-        @status = :waiting
       end
-      @status = :stopped
     end
 
     # Sleep using backoff algorithm
     # @params [ Fixnum ] seconds
     def backoff_sleep
       sleep @wait_time
-      if @wait_time < 8
+      if @wait_time * 2 <= 4
         @wait_time = @wait_time * 2
       end
     end
