@@ -80,7 +80,7 @@ if ARGV.size > 0
   url = ARGV[0]
   begin
     URLQueue.add(url)
-    rescue NewsCrawler::Storage::URLQueue::DuplicateURLError
+  rescue NewsCrawler::Storage::URLQueue::DuplicateURLError
     NewsCrawler::NCLogger.get_logger.info("URL existed")
   end
 end

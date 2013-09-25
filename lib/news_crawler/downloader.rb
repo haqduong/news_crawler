@@ -64,7 +64,8 @@ module NewsCrawler
         Robots.instance.allowed? url
       end
       requests = @urls.map do | url |
-        re = Typhoeus::Request.new(url, followlocation: true)
+        re = Typhoeus::Request.new(url, followlocation: true,
+                                   headers: { 'User-Agent' => 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0'})
         re.on_complete do | response |
           if response.success?
             Storage::RawData.add(url, response.response_body)
