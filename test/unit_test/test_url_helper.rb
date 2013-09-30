@@ -88,31 +88,31 @@ class TestURLHelper < Minitest::Test
   end
 
   def test_url_path_full_part
-    p = get_url_path('http://www.example.com/p1/p2')
+    p = get_url_parts('http://www.example.com/p1/p2')
     assert_equal p[:scheme], 'http'
     assert_equal p[:domain], 'www.example.com'
     assert_equal p[:path], '/p1/p2'
   end
 
   def test_url_only_domain
-    p = get_url_path('www.example.com/')
+    p = get_url_parts('www.example.com/')
     assert_nil p[:scheme]
     assert_equal p[:domain], 'www.example.com'
     assert_equal p[:path], '/'
 
-    p = get_url_path('www.example.com')
+    p = get_url_parts('www.example.com')
     assert_nil p[:scheme]
     assert_equal p[:domain], 'www.example.com'
     assert_nil p[:path]
   end
 
   def test_url_only_path
-    p = get_url_path('/')
+    p = get_url_parts('/')
     assert_nil p[:scheme]
     assert_nil p[:domain]
     assert_equal p[:path], '/'
 
-    p = get_url_path('/ab/aba')
+    p = get_url_parts('/ab/aba')
     assert_nil p[:scheme]
     assert_nil p[:domain]
     assert_equal p[:path], '/ab/aba'

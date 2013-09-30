@@ -31,8 +31,8 @@ module NewsCrawler
       if (url1[0] == '/') || (url2[0] == '/')
         return true
       end
-      p1 = get_url_path(url1)
-      p2 = get_url_path(url2)
+      p1 = get_url_parts(url1)
+      p2 = get_url_parts(url2)
       d1 = p1[:domain].split('.').reverse
       d2 = p2[:domain].split('.').reverse
       d1.zip(d2).inject(true) do | mem, obj |
@@ -40,10 +40,16 @@ module NewsCrawler
       end
     end
 
+    # Get url with domain and scheme, remove path
+    def get_url_domain(url)
+      parts = get_url_parts(url)
+      "#{parts[:scheme]}://#{parts[:domain]}"
+    end
+
     # split URL into 3 parts: scheme, domain, path
     # @param [ String ] url
     # return [ Hash   ] contains parts
-    def get_url_path(url)
+    def get_url_parts(url)
       pattern = /((?<scheme>(http|https)):\/\/)?(?<domain>[^\/]+)?(?<path>\/.*)?/
       md = pattern.match(url)
       { :scheme => md[:scheme],

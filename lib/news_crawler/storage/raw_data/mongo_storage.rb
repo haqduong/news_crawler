@@ -37,7 +37,8 @@ module NewsCrawler
 
         def initialize(*opts)
           config = (SimpleConfig.for :application)
-          client = MongoClient.new(config.mongodb.host, config.mongodb.port)
+          client = MongoClient.new(config.mongodb.host, config.mongodb.port,
+                                   pool_size: 5, pool_timeout: 5)
           db = client[config.mongodb.db_name]
           @coll = db[config.prefix + '_' + config.suffix.raw_data]
           @coll.ensure_index({:url => Mongo::ASCENDING}, {:unique => true})
@@ -47,10 +48,14 @@ module NewsCrawler
         # @param [ String ] url
         # @param [ String ] body
         def add(url, body)
-          body.encode!('utf-8', :invalid => :replace, :undef => :replace)
+          begin
           @coll.update({:url   => url},
                        {:$set  => {:body => body}},
                        {:upsert => true})
+          rescue BSON::InvalidStringEncoding => e
+            puts body
+            raise e
+          end
         end
 
         # Find document with correspond url
