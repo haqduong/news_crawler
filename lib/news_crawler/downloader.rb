@@ -65,10 +65,14 @@ module NewsCrawler
       end
       requests = @urls.map do | url |
         re = Typhoeus::Request.new(url, followlocation: true,
-                                   headers: { 'User-Agent' => 'Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0'})
+                                   headers: { 'Accept-Charset' => 'utf-8'})
+
         re.on_complete do | response |
           if response.success?
-            Storage::RawData.add(url, response.response_body)
+            body = response.response_body
+            body = body.encode('utf-8', :invalid => :replace, :undef => :replace)
+            body.force_encoding('utf-8')
+            Storage::RawData.add(url, body)
             @queue.mark_visited url
           else
             NCLogger.get_logger.warn("[WARNING] Fetch error [#{url}]")

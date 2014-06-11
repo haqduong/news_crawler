@@ -22,6 +22,8 @@
 
 require 'nokogiri'
 require 'uri'
+require 'set'
+require 'ruby-progressbar'
 
 require 'news_crawler/url_helper'
 require 'news_crawler/storage/url_queue'
@@ -39,13 +41,36 @@ module NewsCrawler
 
       def initialize
         @url_stats = {}
+        @candidate_css = Set.new
+        @need_review = []
+        total = find_all(URLQueue::UNPROCESSED)
+        prog = ProgressBar.create(total: total.size, length: 80,
+                                  throttle_rate: 0.5,
+                                  title: "1st pass",
+                                  format: "%t : |%B| (%p%%)")
         while (url = next_unprocessed)
-          NCLogger.get_logger.info "[NC::P::SA] Processing #{url}"
+          NCLogger.get_logger.debug "[NC::P::SA] Processing #{url}"
           re = extract_content(url)
           @url_stats[url] = re
+          prog.increment
 #          @url_stats[url] = re
-#          save_yaml(url, re)
+          save_yaml(url, re)
         end
+
+        prog = ProgressBar.create(total: @need_review.size, length: 80,
+                                  throttle_rate: 0.5,
+                                  title: "2nd pass",
+                                  format: "%t : |%B| (%p%%)")
+
+        @need_review.dup.each do | url |
+          NCLogger.get_logger.debug "[NC::P::SA] Reprocessing #{url}"
+          re = extract_content(url)
+          @url_stats[url] = re
+          prog.increment
+          save_yaml(url, re)
+        end
+
+        puts @candidate_css.inspect
       end
 
       def extract_content(url)
@@ -53,12 +78,36 @@ module NewsCrawler
         result = {}
         result[:type] = :list
 
+        html_doc.encode!("UTF-8")
+
         # Remove tag causing trouble to nokogiri
         html_doc = remove_tag(html_doc, 'script')
         html_doc = remove_tag(html_doc, 'iframe')
         html_doc = remove_tag(html_doc, 'style')
 
         doc = Nokogiri::HTML.parse(html_doc)
+
+        @candidate_css.each do | xp |
+          h1_elem = doc.xpath(xp)
+          if h1_elem.size == 1
+            result, best_node = get_content(h1_elem[0])
+          end
+          if result[:type] == :article
+            break
+          end
+        end
+
+        result = do_heuristic_1(url, doc) if result[:type] == :list
+
+        @need_review << url if result[:type] == :list
+        result
+      end
+
+      # Extract content by heuristic 1
+      # @params [ String ] url
+      # @params [ Nokogiri::HTML::Document ] doc
+      def do_heuristic_1(url, doc)
+        result = { type: :list }
 
         # Heuristic 1: Find h1 tag
         h1_elem = doc.xpath("//h1")
@@ -76,9 +125,10 @@ module NewsCrawler
           end
           total_count = strip_multiple_whitespace(best_node.inner_text).length
           ratio = a_count * 1.0 / total_count
-          if ratio >= 0.2
+          if ratio >= 0.15
             result = { type: :list }
           end
+          add_path_to_candidate(node) if result[:type] == :article
         end
         result
       end
@@ -94,11 +144,18 @@ module NewsCrawler
         cur = node
         best_diff = 0.0
         best_node = cur
+
+        best_ratio = 0.0
+        best_node_ratio = cur
+
         prev_tl, prev_not = text_tag_count(cur)
+        #puts "#{prev_tl}\t#{prev_not}"
         while (cur.type != Nokogiri::XML::Node::HTML_DOCUMENT_NODE)
           text_length, no_of_tags = text_tag_count(cur) # [Text  / no of tags ]
+
           if (no_of_tags - prev_not != 0)
             diff = (text_length - prev_tl) * 1.0 / (no_of_tags - prev_not)
+            #puts "#{no_of_tags}\t#{diff}"
             if diff > best_diff
               best_diff = diff
               best_node = cur
@@ -153,9 +210,6 @@ module NewsCrawler
 
         no_of_tags = no_of_tags(elem)
 
-#        puts "Text length: " + text_length.to_s
-#        puts "No of tags: " + no_of_tags.to_s
-
         [text_length, no_of_tags]
       end
 
@@ -197,6 +251,29 @@ module NewsCrawler
 
       def get_result
         @url_stats
+      end
+
+      private
+      def add_path_to_candidate(node)
+        current = node
+        path = []
+        has_id = false
+        while current.type != Nokogiri::XML::Node::HTML_DOCUMENT_NODE
+          cur_xpath = current.name
+          attrs = []
+          # if ((not has_id) && (id = current['id']))
+          #   attrs << "@id=\"#{id}\""
+          # end
+          if (klass = current['class'])
+            attrs << "@class=\"#{klass}\""
+          end
+          if attrs.size > 0
+            cur_xpath = "#{cur_xpath}[#{attrs.join(' and ')}]"
+          end
+          path << cur_xpath
+          current = current.parent
+        end
+        @candidate_css.add("/" + path.reverse.join('/'))
       end
     end
   end

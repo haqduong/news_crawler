@@ -61,7 +61,12 @@ module NewsCrawler
         inner_url = html_doc.xpath('//a').collect { | a_el |
           temp_url = (a_el.attribute 'href').to_s
           if (!temp_url.nil?) && (temp_url[0] == '/')
-            temp_url = URI.join(url, temp_url).to_s
+            begin
+              temp_url = URI.join(get_url_domain(url), URI.encode(temp_url)).to_s
+            rescue URI::InvalidURIError => e
+              NCLogger.get_logger.info "URI error? #{url}, #{temp_url}"
+              temp_url = nil
+            end
           end
           temp_url
         }
@@ -114,7 +119,7 @@ module NewsCrawler
       def self.exclude?(url)
         config       = SimpleConfig.for :same_domain_selector
         exclude_list = []
-        url_domain   = get_url_path(url)[:domain]
+        url_domain   = get_url_parts(url)[:domain]
         begin
           exclude_group = config.exclude
         rescue NoMethodError => e

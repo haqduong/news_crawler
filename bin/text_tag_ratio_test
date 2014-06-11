@@ -22,6 +22,8 @@
 # along with NewsCrawler.  If not, see <http://www.gnu.org/licenses/>.
 #++
 
+# Example
+
 require 'optparse'
 require 'news_crawler/config'
 require 'news_crawler/nc_logger'
@@ -35,40 +37,59 @@ config = SimpleConfig.for :application
 
 SimpleConfig.for :application do | conf |
   set :prefix, 'vne'
-#  set :prefix, 'dantri'
+  #set :prefix, 'tnl'
 end
 
 NewsCrawler::Storage::RawData.set_engine(config.db.engine.intern)
 NewsCrawler::Storage::URLQueue.set_engine(config.db.engine.intern)
+NewsCrawler::Storage::YAMLStor.set_engine(config.db.engine.intern)
 
+NewsCrawler::NCLogger.set_level Logger::INFO
 
 URLQueue.mark_all('NewsCrawler::Processing::TextTagRatioAnalysis', URLQueue::UNPROCESSED)
 
-puts config.inspect
-
 processor = NewsCrawler::Processing::TextTagRatioAnalysis.new
-#re1 = processor.extract_content("http://vnexpress.net/tin-tuc/the-gioi/tu-lieu/cong-chua-xinh-dep-nhat-chau-au-khong-mang-ngoi-bau-2837275.html")
-#re1 = processor.extract_content("http://www.dantri.com.vn/chuyen-la/bi-bat-vi-te-bay-len-hoa-qua-trong-sieu-thi-782390.htm")
+#re1 = processor.extract_content("http://www.thanhnien.com.vn/pages/20130930/my-quan-ngai-hop-dong-vu-khi-tho-trung.aspx")
+
+#re1 = processor.extract_content("http://vnexpress.net/tin-tuc/xa-hoi/chay-rui-trung-tam-thuong-mai-hai-duong-2879626.html")
+
+#puts re1.inspect
+
 
 #puts re1[:content]
 
 #puts "Title: " + re1[:title]
 #puts re1[:content]
 
-#re2 = processor.extract_content("http://vnexpress.net/tin-tuc/the-gioi/kate-chi-bon-cho-con-dau-long-2837873.html")
-#puts re2[:content]
-
-#re = processor.extract_content("http://giaitri.vnexpress.net/tin-tuc/thoi-trang/lam-dep/giam-can-cung-can-sang-tao-2852223.html")
-
-#puts re[:content]
-
 
 result = processor.get_result
-File.open("/tmp/vne.yaml",'w') do | f |
-  result.each do | key, val |
-    output = {}
-    output[:url] = key
-    output.merge! val
-    f.puts output.to_yaml
+
+output = []
+
+result.each do | key, val |
+  if val[:type] == :article
+    o = {}
+    o[:url] = key
+    o.merge! val
+    output << o
+    #    count += 1 if output[:type] == :article
   end
 end
+
+
+count = 0
+
+
+File.open("/tmp/vne.yaml",'w') do | f |
+  f.puts output.to_yaml
+  result.each do | key, val |
+    if val[:type] == :article
+      output = {}
+      output[:url] = key
+      output.merge! val
+      f.puts output.to_yaml
+    end
+  end
+end
+
+return 0
